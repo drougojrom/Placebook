@@ -1,6 +1,7 @@
 package com.portfolio.romanustiantcev.placebook
 
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v4.app.ActivityCompat
@@ -11,15 +12,14 @@ import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.places.Place
+import com.google.android.gms.location.places.PlacePhotoMetadata
 import com.google.android.gms.location.places.Places
 
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MarkerOptions
-import com.google.android.gms.maps.model.PointOfInterest
+import com.google.android.gms.maps.model.*
 import java.util.jar.Manifest
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.OnConnectionFailedListener {
@@ -38,8 +38,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.On
         val mapFragment = supportFragmentManager
                 .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
-        setupLocationClient()
         setupGoogleApiClient()
+        setupLocationClient()
     }
 
     /**
@@ -125,10 +125,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.On
                 .getPlaceById(googleApiClient, pointOfInterest.placeId)
                 .setResultCallback { places ->
                     if (places.status.isSuccess && places.count > 0) {
-                        val place = places.get(0)
-                        Toast.makeText(this, "${place.name} ${place.phoneNumber}",
-                                Toast.LENGTH_LONG)
-                                .show()
+                        val place = places.get(0).freeze()
+                        displayPoiGetPhotoMetaDataStep(place)
                     } else {
                         Log.e(TAG, "Error with getPlaceById ${places.status.statusMessage}")
                     }
@@ -144,10 +142,38 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.On
                         val photoMetadataBuffer = placePhotoMetadataResult.photoMetadata
                         if (photoMetadataBuffer.count > 0) {
                             val photo = photoMetadataBuffer.get(0).freeze()
-                            // TODO: finish
+                            displayPoiGetPhotoStep(place, photo)
                         }
                         photoMetadataBuffer.release()
                     }
                 }
+    }
+
+    private fun displayPoiGetPhotoStep(place: Place, photo: PlacePhotoMetadata) {
+        photo.getScaledPhoto(googleApiClient,
+                resources.getDimensionPixelSize(R.dimen.default_image_width),
+                resources.getDimensionPixelSize(R.dimen.default_image_height))
+                .setResultCallback { placePhotoResult ->
+                    if (placePhotoResult.status.isSuccess) {
+                        val image = placePhotoResult.bitmap
+                        displayPoiDisplayStep(place, image)
+                    } else {
+                        displayPoiDisplayStep(place, null)
+                    }
+        }
+    }
+
+    private fun displayPoiDisplayStep(place: Place, photo: Bitmap?) {
+        val iconPhoto = if (photo == null) {
+            BitmapDescriptorFactory.defaultMarker()
+        } else {
+            BitmapDescriptorFactory.fromBitmap(photo)
+        }
+
+        mMap.addMarker(MarkerOptions()
+                .position(place.latLng)
+                .icon(iconPhoto)
+                .title(place.name as? String)
+                .snippet(place.phoneNumber as? String))
     }
 }
