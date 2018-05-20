@@ -5,8 +5,13 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v4.app.ActivityCompat
 import android.util.Log
+import android.widget.Toast
+import com.google.android.gms.common.ConnectionResult
+import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.places.Place
+import com.google.android.gms.location.places.Places
 
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -14,12 +19,17 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.PointOfInterest
 import java.util.jar.Manifest
 
-class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
+class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.OnConnectionFailedListener {
+    override fun onConnectionFailed(connectionResult: ConnectionResult) {
+        Log.e(TAG, "Google play connection failed: " + connectionResult.errorMessage)
+    }
 
     private lateinit var mMap: GoogleMap
     private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private lateinit var googleApiClient: GoogleApiClient
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,6 +39,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
         setupLocationClient()
+        setupGoogleApiClient()
     }
 
     /**
@@ -43,6 +54,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
         getCurrentLocation()
+
+        mMap.setOnPoiClickListener({
+            displayPoi(it)
+        })
     }
 
     private fun setupLocationClient() {
@@ -62,26 +77,18 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun getCurrentLocation() {
-        // 1
         if (ActivityCompat.checkSelfPermission(this,
                         android.Manifest.permission.ACCESS_FINE_LOCATION) !=
                 PackageManager.PERMISSION_GRANTED) {
-// 2
             requestLocationPermissions()
         } else {
-// 3
+            mMap.isMyLocationEnabled = true
             fusedLocationClient.lastLocation.addOnCompleteListener {
                 if (it.result != null) {
-// 4
                     val latLng = LatLng(it.result.latitude, it.result.longitude)
-                    // 5
-                    mMap.addMarker(MarkerOptions().position(latLng)
-                            .title("You are here!"))
-                    // 6
                     val update = CameraUpdateFactory.newLatLngZoom(latLng, 16.0f)
-                    // 7
                     mMap.moveCamera(update)
-                } else { // 8
+                } else {
                     Log.e(TAG, "No location found")
                 }
             } }
@@ -98,5 +105,49 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             } else {
                 Log.e(TAG, "Location permission denied")
             }
-        } }
+        }
+    }
+
+    private fun setupGoogleApiClient() {
+        googleApiClient = GoogleApiClient
+                .Builder(this)
+                .enableAutoManage(this, this)
+                .addApi(Places.GEO_DATA_API)
+                .build()
+    }
+
+    private fun displayPoi(pointOfInterest: PointOfInterest) {
+        displayPoiGetPlaceStep(pointOfInterest)
+    }
+
+    private fun displayPoiGetPlaceStep(pointOfInterest: PointOfInterest) {
+        Places.GeoDataApi
+                .getPlaceById(googleApiClient, pointOfInterest.placeId)
+                .setResultCallback { places ->
+                    if (places.status.isSuccess && places.count > 0) {
+                        val place = places.get(0)
+                        Toast.makeText(this, "${place.name} ${place.phoneNumber}",
+                                Toast.LENGTH_LONG)
+                                .show()
+                    } else {
+                        Log.e(TAG, "Error with getPlaceById ${places.status.statusMessage}")
+                    }
+                    places.release()
+                }
+    }
+
+    private fun displayPoiGetPhotoMetaDataStep(place: Place) {
+        Places.GeoDataApi
+                .getPlacePhotos(googleApiClient, place.id)
+                .setResultCallback { placePhotoMetadataResult ->
+                    if (placePhotoMetadataResult.status.isSuccess) {
+                        val photoMetadataBuffer = placePhotoMetadataResult.photoMetadata
+                        if (photoMetadataBuffer.count > 0) {
+                            val photo = photoMetadataBuffer.get(0).freeze()
+                            // TODO: finish
+                        }
+                        photoMetadataBuffer.release()
+                    }
+                }
+    }
 }
