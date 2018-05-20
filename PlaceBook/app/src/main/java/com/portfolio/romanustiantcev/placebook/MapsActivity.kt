@@ -1,5 +1,6 @@
 package com.portfolio.romanustiantcev.placebook
 
+import adapter.BookmarkInfoWindowAdapter
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.support.v7.app.AppCompatActivity
@@ -54,6 +55,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.On
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
         getCurrentLocation()
+        mMap.setInfoWindowAdapter(BookmarkInfoWindowAdapter(this))
 
         mMap.setOnPoiClickListener({
             displayPoi(it)
@@ -170,10 +172,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.On
             BitmapDescriptorFactory.fromBitmap(photo)
         }
 
-        mMap.addMarker(MarkerOptions()
+        val marker = mMap.addMarker(MarkerOptions()
                 .position(place.latLng)
-                .icon(iconPhoto)
                 .title(place.name as? String)
                 .snippet(place.phoneNumber as? String))
+        marker.tag = photo
     }
 }
