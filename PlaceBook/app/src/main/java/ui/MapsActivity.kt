@@ -1,4 +1,4 @@
-package com.portfolio.romanustiantcev.placebook
+package ui
 
 import adapter.BookmarkInfoWindowAdapter
 import android.content.pm.PackageManager
@@ -7,7 +7,6 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v4.app.ActivityCompat
 import android.util.Log
-import android.widget.Toast
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -21,7 +20,7 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
-import java.util.jar.Manifest
+import com.portfolio.romanustiantcev.placebook.R
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.OnConnectionFailedListener {
     override fun onConnectionFailed(connectionResult: ConnectionResult) {
