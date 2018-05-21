@@ -22,7 +22,10 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
 import com.portfolio.romanustiantcev.placebook.R
 
-class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.OnConnectionFailedListener {
+class MapsActivity : AppCompatActivity(),
+        OnMapReadyCallback,
+        GoogleApiClient.OnConnectionFailedListener {
+
     override fun onConnectionFailed(connectionResult: ConnectionResult) {
         Log.e(TAG, "Google play connection failed: " + connectionResult.errorMessage)
     }

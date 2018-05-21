@@ -4,7 +4,6 @@ import android.arch.persistence.room.Database
 import android.arch.persistence.room.Room
 import android.arch.persistence.room.RoomDatabase
 import android.content.Context
-import com.google.android.gms.location.places.Place
 import model.Bookmark
 
 @Database(entities = arrayOf(Bookmark::class), version = 1)
