@@ -38,6 +38,7 @@ dependencies {
     annotationProcessor "android.arch.persistence.room:compiler:" + "$room_version"
     annotationProcessor "android.arch.lifecycle:compiler:" + "$architecture_version"
     kapt "android.arch.persistence.room:compiler:" + "$room_version"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:0.19.3"
 }
 repositories {
     mavenCentral()
