@@ -24,6 +24,7 @@ import com.google.android.gms.maps.model.*
 import com.portfolio.romanustiantcev.placebook.R
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.launch
+import model.Bookmark
 import viewmodel.MapsViewModel
 
 class MapsActivity : AppCompatActivity(),
@@ -90,6 +91,7 @@ class MapsActivity : AppCompatActivity(),
 
     private fun setupMapsViewModel() {
         mapsViewModel = ViewModelProviders.of(this).get(MapsViewModel::class.java)
+        createBookmarkMarkerObserver()
     }
 
     private fun setupGoogleApiClient() {
@@ -208,6 +210,32 @@ class MapsActivity : AppCompatActivity(),
             }
         }
         marker.remove()
+    }
+
+    private fun addPlaceMarker(bookmark: MapsViewModel.BookmarkMarkerView): Marker? {
+        val marker = mMap.addMarker(MarkerOptions()
+                .position(bookmark.location)
+                .icon(BitmapDescriptorFactory
+                        .defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
+                .alpha(0.8f))
+        marker.tag = bookmark
+        return marker
+    }
+
+    private fun displayAllBookmarks(bookmarks: List<MapsViewModel.BookmarkMarkerView>) {
+        for (bookmark in bookmarks) {
+            addPlaceMarker(bookmark)
+        }
+    }
+
+    private fun createBookmarkMarkerObserver() {
+        mapsViewModel.getBookmarkMarkerViews()?.observe(this,
+                android.arch.lifecycle.Observer<List<MapsViewModel.BookmarkMarkerView>> {
+                    mMap.clear()
+                    it?.let {
+                        displayAllBookmarks(it)
+                    }
+        })
     }
 
     class PlaceInfo(val place: Place? = null,
