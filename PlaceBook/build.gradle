@@ -5,6 +5,8 @@ buildscript {
     ext {
         kotlin_version = '1.2.21'
         play_services_version = '11.8.0'
+        architecture_version = '1.1.0'
+        room_version = '1.0.0'
     }
     repositories {
         google()

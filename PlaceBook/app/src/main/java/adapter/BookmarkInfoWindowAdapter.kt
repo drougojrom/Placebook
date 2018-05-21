@@ -1,14 +1,13 @@
 package adapter
 
 import android.app.Activity
-import android.content.Context
-import android.graphics.Bitmap
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.Marker
 import com.portfolio.romanustiantcev.placebook.R
+import ui.MapsActivity
 
 class BookmarkInfoWindowAdapter(context: Activity) :
     GoogleMap.InfoWindowAdapter {
@@ -27,7 +26,7 @@ class BookmarkInfoWindowAdapter(context: Activity) :
         phoneView.text = marker?.snippet ?: ""
 
         val imageView = contents.findViewById<ImageView>(R.id.photo)
-        imageView.setImageBitmap(marker?.tag as Bitmap?)
+        imageView.setImageBitmap((marker?.tag as MapsActivity.PlaceInfo).image)
 
         return contents
     }
