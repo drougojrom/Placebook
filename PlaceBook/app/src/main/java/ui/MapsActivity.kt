@@ -200,6 +200,7 @@ class MapsActivity : AppCompatActivity(),
                 .title(place.name as? String)
                 .snippet(place.phoneNumber as? String))
         marker.tag = PlaceInfo(place, photo)
+        marker?.showInfoWindow()
     }
 
     private fun handleInfoWindowClick(marker: Marker) {

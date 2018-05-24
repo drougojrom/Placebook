@@ -32,6 +32,8 @@ class MapsViewModel(application: Application):
         bookmark.phone = place.phoneNumber.toString()
 
         val newId = bookmarkRepo.addBookmark(bookmark)
+        bookmark.setImage(image, getApplication())
+
         Log.i(TAG, "New bookmark $newId added")
     }
 
