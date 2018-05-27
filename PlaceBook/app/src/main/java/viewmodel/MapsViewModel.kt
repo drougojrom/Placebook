@@ -4,12 +4,14 @@ import android.app.Application
 import android.arch.lifecycle.AndroidViewModel
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.Transformations
+import android.content.Context
 import android.graphics.Bitmap
 import android.util.Log
 import com.google.android.gms.location.places.Place
 import com.google.android.gms.maps.model.LatLng
 import model.Bookmark
 import repository.BookmarkRepo
+import util.ImageUtils
 
 class MapsViewModel(application: Application):
         AndroidViewModel(application) {
@@ -17,7 +19,15 @@ class MapsViewModel(application: Application):
     data class BookmarkMarkerView(
             var id: Long? = null,
             var location: LatLng = LatLng(0.0, 0.0)
-    )
+    ) {
+        fun getImage(context: Context): Bitmap? {
+            id?.let {
+                return ImageUtils.loadBitmapFromFile(context,
+                        Bookmark.generateImageFilename(it))
+            }
+            return null
+        }
+    }
 
     private val TAG = "MapsViewModel"
     private var bookmarkRepo: BookmarkRepo = BookmarkRepo(getApplication())
