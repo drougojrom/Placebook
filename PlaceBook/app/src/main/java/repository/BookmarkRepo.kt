@@ -20,6 +20,11 @@ class BookmarkRepo(private val context: Context) {
         return Bookmark()
     }
 
+    fun getLiveBookmark(id: Long): LiveData<Bookmark> {
+        val bookmark = bookmarkDao.loadLiveBookmark(id)
+        return bookmark
+    }
+
     val allBookmarks: LiveData<List<Bookmark>>
         get() {
             return bookmarkDao.loadAll()
