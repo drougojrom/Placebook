@@ -216,6 +216,8 @@ class MapsActivity : AppCompatActivity(),
     private fun addPlaceMarker(bookmark: MapsViewModel.BookmarkMarkerView): Marker? {
         val marker = mMap.addMarker(MarkerOptions()
                 .position(bookmark.location)
+                .title(bookmark.name)
+                .snippet(bookmark.phoneNumber)
                 .icon(BitmapDescriptorFactory
                         .defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
                 .alpha(0.8f))
