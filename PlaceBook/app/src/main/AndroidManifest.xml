@@ -42,7 +42,7 @@
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="stateHidden">
         </activity>
-        
+
     </application>
 
 </manifest>
