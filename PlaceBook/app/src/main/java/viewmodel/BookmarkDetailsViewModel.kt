@@ -6,6 +6,8 @@ import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.Transformations
 import android.content.Context
 import android.graphics.Bitmap
+import kotlinx.coroutines.experimental.CommonPool
+import kotlinx.coroutines.experimental.launch
 import model.Bookmark
 import repository.BookmarkRepo
 import util.ImageUtils
@@ -38,6 +40,15 @@ class BookmarkDetailsViewModel(application: Application):
         return bookmarkDetailsView
     }
 
+    fun updateBookmark(bookmarkDetailsView: BookmarkDetailsView) {
+        launch(CommonPool) {
+            val bookmark = bookmarkViewToBookamrk(bookmarkDetailsView)
+            bookmark?.let {
+                bookmarkRepo.updateBookmark(it)
+            }
+        }
+    }
+
     private fun bookmarkToBookmarkView(bookmark: Bookmark): BookmarkDetailsView {
         return BookmarkDetailsView(bookmark.id,
                 bookmark.name,
@@ -52,5 +63,19 @@ class BookmarkDetailsViewModel(application: Application):
             val bookmarkView = bookmarkToBookmarkView(it)
             bookmarkView
         }
+    }
+
+    private fun bookmarkViewToBookamrk(bookmarkDetailsView: BookmarkDetailsView): Bookmark? {
+        val bookmark = bookmarkDetailsView.id?.let {
+            bookmarkRepo.getBookmark(it)
+        }
+        if (bookmark != null) {
+            bookmark.id = bookmarkDetailsView.id
+            bookmark.name = bookmarkDetailsView.name
+            bookmark.phone = bookmarkDetailsView.phone
+            bookmark.address = bookmarkDetailsView.address
+            bookmark.notes = bookmarkDetailsView.notes
+        }
+        return  bookmark
     }
 }

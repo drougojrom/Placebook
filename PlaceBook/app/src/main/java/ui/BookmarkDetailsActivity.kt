@@ -4,6 +4,8 @@ import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.view.Menu
+import android.view.MenuItem
 import com.portfolio.romanustiantcev.placebook.R
 import kotlinx.android.synthetic.main.activity_bookmark_details.*
 import viewmodel.BookmarkDetailsViewModel
@@ -20,6 +22,22 @@ class BookmarkDetailsActivity: AppCompatActivity() {
         setupToolbar()
         setupViewModel()
         getIntentData()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        val inflater = menuInflater
+        inflater.inflate(R.menu.menu_bookmark_details, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        when (item?.itemId) {
+            R.id.action_save -> {
+                saveChanges()
+                return true
+            }
+            else -> return super.onOptionsItemSelected(item)
+        }
     }
 
     private fun setupToolbar() {
@@ -61,5 +79,21 @@ class BookmarkDetailsActivity: AppCompatActivity() {
                         populateImageView()
                     }
                 })
+    }
+
+    private fun saveChanges() {
+        val name = editTextName.text.toString()
+        if (name.isEmpty()) {
+            return
+        }
+
+        bookmarkDetailsView?.let {
+            it.name = editTextName.text.toString()
+            it.address = editTextAddress.text.toString()
+            it.notes = editTextNotes.text.toString()
+            it.phone = editTextPhone.text.toString()
+            bookmarkDetailsViewModel.updateBookmark(it)
+        }
+        finish()
     }
 }
