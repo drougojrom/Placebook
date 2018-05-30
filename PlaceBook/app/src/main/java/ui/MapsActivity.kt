@@ -23,6 +23,7 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
 import com.portfolio.romanustiantcev.placebook.R
+import kotlinx.android.synthetic.main.main_view_maps.*
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.launch
 import model.Bookmark
@@ -111,6 +112,10 @@ class MapsActivity : AppCompatActivity(),
         mMap.setOnInfoWindowClickListener {
             handleInfoWindowClick(it)
         }
+    }
+
+    private fun setupToolbar() {
+        setSupportActionBar(toolbar)
     }
 
     private fun requestLocationPermissions() {
