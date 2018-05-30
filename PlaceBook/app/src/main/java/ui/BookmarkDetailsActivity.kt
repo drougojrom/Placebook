@@ -1,5 +1,6 @@
 package ui
 
+import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
@@ -17,6 +18,8 @@ class BookmarkDetailsActivity: AppCompatActivity() {
 
         setContentView(R.layout.activity_bookmark_details)
         setupToolbar()
+        setupViewModel()
+        getIntentData()
     }
 
     private fun setupToolbar() {
@@ -47,5 +50,16 @@ class BookmarkDetailsActivity: AppCompatActivity() {
         }
     }
 
-    
+    private fun getIntentData() {
+        val bookmarkId = intent.getLongExtra(MapsActivity.Companion.EXTRA_BOOKMARK_ID,
+                0)
+        bookmarkDetailsViewModel.getBookmark(bookmarkId)?.observe(this,
+                Observer<BookmarkDetailsViewModel.BookmarkDetailsView> {
+                    it?.let {
+                        bookmarkDetailsView = it
+                        populateFields()
+                        populateImageView()
+                    }
+                })
+    }
 }
