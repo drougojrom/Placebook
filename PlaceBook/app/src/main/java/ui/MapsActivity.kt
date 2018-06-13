@@ -8,6 +8,7 @@ import android.graphics.Bitmap
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v4.app.ActivityCompat
+import android.support.v7.app.ActionBarDrawerToggle
 import android.util.Log
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.api.GoogleApiClient
@@ -23,11 +24,13 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
 import com.portfolio.romanustiantcev.placebook.R
+import kotlinx.android.synthetic.main.activity_maps.*
 import kotlinx.android.synthetic.main.main_view_maps.*
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.launch
 import model.Bookmark
 import viewmodel.MapsViewModel
+import kotlinx.android.synthetic.main.main_view_maps.*
 
 class MapsActivity : AppCompatActivity(),
         OnMapReadyCallback,
@@ -50,7 +53,6 @@ class MapsActivity : AppCompatActivity(),
         val mapFragment = supportFragmentManager
                 .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
-
     }
 
     /**
@@ -65,6 +67,7 @@ class MapsActivity : AppCompatActivity(),
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
 
+        setupToolbar()
         setupGoogleApiClient()
         setupLocationClient()
         getCurrentLocation()
@@ -116,6 +119,12 @@ class MapsActivity : AppCompatActivity(),
 
     private fun setupToolbar() {
         setSupportActionBar(toolbar)
+        val toggle = ActionBarDrawerToggle(this,
+                drawerLayout,
+                toolbar,
+                R.string.open_drawler,
+                R.string.close_drawler)
+        toggle.syncState()
     }
 
     private fun requestLocationPermissions() {
