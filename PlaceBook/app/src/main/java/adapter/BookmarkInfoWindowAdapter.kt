@@ -9,7 +9,6 @@ import com.google.android.gms.maps.model.Marker
 import com.portfolio.romanustiantcev.placebook.R
 import ui.MapsActivity
 import viewmodel.MapsViewModel
-import android.content.Context
 
 
 class BookmarkInfoWindowAdapter(val context: Activity) :
@@ -35,8 +34,8 @@ class BookmarkInfoWindowAdapter(val context: Activity) :
                 imageView.setImageBitmap((marker.tag as MapsActivity.PlaceInfo).image)
             }
 
-            is MapsViewModel.BookmarkMarkerView -> {
-                val bookmarkMarkerView = marker.tag as MapsViewModel.BookmarkMarkerView
+            is MapsViewModel.BookmarkView -> {
+                val bookmarkMarkerView = marker.tag as MapsViewModel.BookmarkView
                 imageView.setImageBitmap(bookmarkMarkerView.getImage(context))
             }
         }

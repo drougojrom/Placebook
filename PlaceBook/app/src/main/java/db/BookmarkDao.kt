@@ -9,7 +9,7 @@ import model.Bookmark
 @Dao
 
 interface BookmarkDao {
-    @Query("SELECT * FROM Bookmark")
+    @Query("SELECT * FROM Bookmark ORDER BY name")
     fun loadAll(): LiveData<List<Bookmark>>
 
     @Query("SELECT * FROM Bookmark WHERE id = :arg0")
