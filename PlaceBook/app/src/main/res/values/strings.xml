@@ -1,4 +1,6 @@
 <resources>
     <string name="app_name">PlaceBook</string>
     <string name="title_activity_maps">PlaceBook</string>
+    <string name="open_drawler">Open Drawler</string>
+    <string name="close_drawler">Close Drawler</string>
 </resources>
