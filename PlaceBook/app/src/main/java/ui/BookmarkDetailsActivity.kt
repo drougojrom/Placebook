@@ -6,11 +6,15 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.Toast
 import com.portfolio.romanustiantcev.placebook.R
 import kotlinx.android.synthetic.main.activity_bookmark_details.*
+import kotlinx.android.synthetic.main.drawer_view_maps.*
 import viewmodel.BookmarkDetailsViewModel
+import ui.PhotoOptionDialogFragment
 
-class BookmarkDetailsActivity: AppCompatActivity() {
+class BookmarkDetailsActivity: AppCompatActivity(),
+        PhotoOptionDialogFragment.PhotoOptionDialogListener {
 
     private lateinit var bookmarkDetailsViewModel: BookmarkDetailsViewModel
     private var bookmarkDetailsView: BookmarkDetailsViewModel.BookmarkDetailsView? = null
@@ -40,6 +44,19 @@ class BookmarkDetailsActivity: AppCompatActivity() {
         }
     }
 
+    // MARK: PhotoDialog listener
+    override fun onCaptureClick() {
+        Toast.makeText(this,
+                "Camera capture",
+                Toast.LENGTH_SHORT).show()
+    }
+
+    override fun onPickClick() {
+        Toast.makeText(this,
+                "Gallery capture",
+                Toast.LENGTH_SHORT).show()
+    }
+
     private fun setupToolbar() {
         setSupportActionBar(toolbar)
     }
@@ -64,6 +81,9 @@ class BookmarkDetailsActivity: AppCompatActivity() {
             val placeImage = it.getImage(this)
             placeImage?.let {
                 imageViewPlace.setImageBitmap(placeImage)
+                imageViewPlace.setOnClickListener {
+                    replaceImage()
+                }
             }
         }
     }
@@ -95,5 +115,10 @@ class BookmarkDetailsActivity: AppCompatActivity() {
             bookmarkDetailsViewModel.updateBookmark(it)
         }
         finish()
+    }
+
+    private fun replaceImage() {
+        val newFragment = PhotoOptionDialogFragment.newInstance(this)
+        newFragment?.show(supportFragmentManager, "photoOptionDialog")
     }
 }
