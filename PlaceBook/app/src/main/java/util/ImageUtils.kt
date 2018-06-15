@@ -3,11 +3,10 @@ package util
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.net.Uri
 import android.os.Environment
-import java.io.ByteArrayOutputStream
-import java.io.File
-import java.io.FileOutputStream
-import java.io.IOException
+import java.io.*
+import java.net.URI
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -61,6 +60,36 @@ object ImageUtils {
                 width, height)
         options.inJustDecodeBounds = false
         return BitmapFactory.decodeFile(filePath, options)
+    }
+
+    fun decodeUriStreamToSize(uri: Uri,
+                              width: Int, height: Int, context: Context): Bitmap? {
+        var inputStream: InputStream? = null
+        try {
+            val options: BitmapFactory.Options
+            inputStream = context.contentResolver.openInputStream(uri)
+            if (inputStream != null) {
+                options = BitmapFactory.Options()
+                options.inJustDecodeBounds = false
+                BitmapFactory.decodeStream(inputStream, null, options)
+                inputStream.close()
+                inputStream = context.contentResolver.openInputStream(uri)
+                if (inputStream != null) {
+                    options.inSampleSize = calculateInSampleSize(options.outWidth,
+                            options.outHeight,
+                            width, height)
+                    options.inJustDecodeBounds = false
+                    val bitmap = BitmapFactory.decodeStream(inputStream, null, options)
+                    inputStream.close()
+                    return bitmap
+                }
+            }
+            return null
+        } catch (e: Exception) {
+            return null
+        } finally {
+            inputStream?.close()
+        }
     }
 
     @Throws(IOException::class)
