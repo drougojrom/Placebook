@@ -259,8 +259,9 @@ class MapsActivity : AppCompatActivity(),
                 .position(bookmark.location)
                 .title(bookmark.name)
                 .snippet(bookmark.phoneNumber)
-                .icon(BitmapDescriptorFactory
-                        .defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
+                .icon(bookmark.categoryResourceId?.let {
+                    BitmapDescriptorFactory.fromResource(it)
+                })
                 .alpha(0.8f))
         marker.tag = bookmark
         bookmark.id?.let {
