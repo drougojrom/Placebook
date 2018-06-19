@@ -12,6 +12,7 @@ import android.support.v4.content.FileProvider
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.ArrayAdapter
 import android.widget.Toast
 import com.portfolio.romanustiantcev.placebook.R
 import kotlinx.android.synthetic.main.activity_bookmark_details.*
@@ -150,6 +151,7 @@ class BookmarkDetailsActivity: AppCompatActivity(),
                         bookmarkDetailsView = it
                         populateFields()
                         populateImageView()
+                        populateCategoryList()
                     }
                 })
     }
@@ -196,6 +198,22 @@ class BookmarkDetailsActivity: AppCompatActivity(),
                 resources.getDimensionPixelSize(
                         R.dimen.default_image_height),
                 this)
+    }
+
+    private fun populateCategoryList() {
+        val bookmarkView = bookmarkDetailsView ?: return
+        val resourceId = bookmarkDetailsViewModel.getCategoryResourseId(bookmarkView.category)
+        resourceId?.let {
+            imageViewCategory.setImageResource(it)
+        }
+        val categories = bookmarkDetailsViewModel.getCategories()
+        val adapter = ArrayAdapter(this,
+                android.R.layout.simple_spinner_item,
+                categories)
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spinnerCategory.adapter = adapter
+        val placeCategory = bookmarkView.category
+        spinnerCategory.setSelection(adapter.getPosition(placeCategory))
     }
 
     companion object {

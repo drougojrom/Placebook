@@ -23,7 +23,8 @@ class BookmarkDetailsViewModel(application: Application):
             var name: String = "",
             var phone: String = "",
             var address: String = "",
-            var notes: String = ""
+            var notes: String = "",
+            var category: String = ""
     ) {
         fun getImage(context: Context): Bitmap? {
             id?.let {
@@ -54,12 +55,21 @@ class BookmarkDetailsViewModel(application: Application):
         }
     }
 
+    fun getCategoryResourseId(category: String): Int? {
+        return bookmarkRepo.getCategoryResourceId(category)
+    }
+
+    fun getCategories():List<String> {
+        return bookmarkRepo.categories
+    }
+
     private fun bookmarkToBookmarkView(bookmark: Bookmark): BookmarkDetailsView {
         return BookmarkDetailsView(bookmark.id,
                 bookmark.name,
                 bookmark.phone,
                 bookmark.address,
-                bookmark.notes)
+                bookmark.notes,
+                bookmark.category)
     }
 
     private fun mapBookmarkToBookrmarkView(bookmarkId: Long) {
@@ -80,9 +90,8 @@ class BookmarkDetailsViewModel(application: Application):
             bookmark.phone = bookmarkDetailsView.phone
             bookmark.address = bookmarkDetailsView.address
             bookmark.notes = bookmarkDetailsView.notes
+            bookmark.category = bookmarkDetailsView.category
         }
         return  bookmark
     }
-
-
 }
