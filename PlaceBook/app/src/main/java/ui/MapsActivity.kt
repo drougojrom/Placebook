@@ -14,6 +14,8 @@ import android.support.v4.app.ActivityCompat
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.widget.LinearLayoutManager
 import android.util.Log
+import android.view.WindowManager
+import android.widget.ProgressBar
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException
 import com.google.android.gms.common.GooglePlayServicesRepairableException
@@ -181,6 +183,7 @@ class MapsActivity : AppCompatActivity(),
     }
 
     private fun displayPoi(pointOfInterest: PointOfInterest) {
+        showProgress()
         displayPoiGetPlaceStep(pointOfInterest)
     }
 
@@ -193,6 +196,7 @@ class MapsActivity : AppCompatActivity(),
                         displayPoiGetPhotoMetaDataStep(place)
                     } else {
                         Log.e(TAG, "Error with getPlaceById ${places.status.statusMessage}")
+                        hideProgress()
                     }
                     places.release()
                 }
@@ -207,6 +211,9 @@ class MapsActivity : AppCompatActivity(),
                         if (photoMetadataBuffer.count > 0) {
                             val photo = photoMetadataBuffer.get(0).freeze()
                             displayPoiGetPhotoStep(place, photo)
+                            hideProgress()
+                        } else {
+                            hideProgress()
                         }
                         photoMetadataBuffer.release()
                     }
@@ -218,6 +225,7 @@ class MapsActivity : AppCompatActivity(),
                 resources.getDimensionPixelSize(R.dimen.default_image_width),
                 resources.getDimensionPixelSize(R.dimen.default_image_height))
                 .setResultCallback { placePhotoResult ->
+                    hideProgress()
                     if (placePhotoResult.status.isSuccess) {
                         val image = placePhotoResult.bitmap
                         displayPoiDisplayStep(place, image)
@@ -353,10 +361,30 @@ class MapsActivity : AppCompatActivity(),
                     location.latitude = place.latLng.latitude
                     location.longitude = place.latLng.longitude
                     updateMapToLocation(location)
+                    showProgress()
                     displayPoiGetPhotoMetaDataStep(place)
                 }
             }
         }
+    }
+
+    private fun disableUserInteraction() {
+        window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+    }
+
+    private fun enableUserInteraction() {
+        window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+    }
+
+    private fun showProgress() {
+        progressBar.visibility = ProgressBar.VISIBLE
+        disableUserInteraction()
+    }
+
+    private fun hideProgress() {
+        progressBar.visibility = ProgressBar.INVISIBLE
+        enableUserInteraction()
     }
 
     class PlaceInfo(val place: Place? = null,
