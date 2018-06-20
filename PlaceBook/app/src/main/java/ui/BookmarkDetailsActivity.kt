@@ -12,6 +12,8 @@ import android.support.v4.content.FileProvider
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
+import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import com.portfolio.romanustiantcev.placebook.R
@@ -167,6 +169,7 @@ class BookmarkDetailsActivity: AppCompatActivity(),
             it.address = editTextAddress.text.toString()
             it.notes = editTextNotes.text.toString()
             it.phone = editTextPhone.text.toString()
+            it.category = spinnerCategory.selectedItem as String
             bookmarkDetailsViewModel.updateBookmark(it)
         }
         finish()
@@ -214,6 +217,21 @@ class BookmarkDetailsActivity: AppCompatActivity(),
         spinnerCategory.adapter = adapter
         val placeCategory = bookmarkView.category
         spinnerCategory.setSelection(adapter.getPosition(placeCategory))
+        spinnerCategory.post {
+            spinnerCategory.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(parent: AdapterView<*>, view: View,
+                                            position: Int, id: Long) {
+                    val category = parent.getItemAtPosition(position) as String
+                    val resourseId = bookmarkDetailsViewModel.getCategoryResourseId(category)
+                    resourceId?.let {
+                        imageViewCategory.setImageResource(it)
+                    }
+                }
+                override fun onNothingSelected(p0: AdapterView<*>?) {
+
+                }
+            }
+        }
     }
 
     companion object {
