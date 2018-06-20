@@ -24,7 +24,10 @@ class BookmarkDetailsViewModel(application: Application):
             var phone: String = "",
             var address: String = "",
             var notes: String = "",
-            var category: String = ""
+            var category: String = "",
+            var placeId: String? = null,
+            val latitude: Double = 0.0,
+            val longitude: Double = 0.0
     ) {
         fun getImage(context: Context): Bitmap? {
             id?.let {
@@ -80,7 +83,10 @@ class BookmarkDetailsViewModel(application: Application):
                 bookmark.phone,
                 bookmark.address,
                 bookmark.notes,
-                bookmark.category)
+                bookmark.category,
+                bookmark.placeId,
+                bookmark.latitude,
+                bookmark.longitude)
     }
 
     private fun mapBookmarkToBookrmarkView(bookmarkId: Long) {
