@@ -59,6 +59,15 @@ class MapsViewModel(application: Application):
         return bookmarks
     }
 
+    fun addBookmark(latLng: LatLng): Long? {
+        val bookmark = bookmarkRepo.createBookmark()
+        bookmark.latitude = latLng.latitude
+        bookmark.longitude = latLng.longitude
+        bookmark.name = "Untitled"
+        bookmark.category = "Other"
+        return bookmarkRepo.addBookmark(bookmark)
+    }
+
     private fun bookmarkToBookmarkView(bookmark: Bookmark): MapsViewModel.BookmarkView {
         return MapsViewModel.BookmarkView(bookmark.id,
                 LatLng(bookmark.latitude, bookmark.longitude),
@@ -86,6 +95,8 @@ class MapsViewModel(application: Application):
         }
         return  category
     }
+
+
 
 }
 

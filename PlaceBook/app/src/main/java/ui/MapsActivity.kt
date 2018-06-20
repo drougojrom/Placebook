@@ -124,6 +124,9 @@ class MapsActivity : AppCompatActivity(),
         mMap.setOnInfoWindowClickListener {
             handleInfoWindowClick(it)
         }
+        mMap.setOnMapLongClickListener {
+            newBookmark(it)
+        }
         fab.setOnClickListener {
             searchAtCurrentLocation()
         }
@@ -329,6 +332,15 @@ class MapsActivity : AppCompatActivity(),
             // TODO: handle exception
         } catch (e: GooglePlayServicesNotAvailableException) {
             // TODO: handle exception
+        }
+    }
+
+    private fun newBookmark(latLng: LatLng) {
+        launch(CommonPool) {
+            val bookmarkId = mapsViewModel.addBookmark(latLng)
+            bookmarkId?.let {
+                startBookmarkDetail(bookmarkId)
+            }
         }
     }
 
