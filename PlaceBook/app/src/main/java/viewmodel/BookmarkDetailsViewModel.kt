@@ -55,6 +55,17 @@ class BookmarkDetailsViewModel(application: Application):
         }
     }
 
+    fun deleteBookmark(bookmarkDetailsView: BookmarkDetailsView) {
+        launch(CommonPool) {
+            val bookmark = bookmarkDetailsView.id?.let {
+                bookmarkRepo.getBookmark(it)
+            }
+            bookmark?.let {
+                bookmarkRepo.deleteBookmark(it)
+            }
+        }
+    }
+
     fun getCategoryResourseId(category: String): Int? {
         return bookmarkRepo.getCategoryResourceId(category)
     }
@@ -74,9 +85,11 @@ class BookmarkDetailsViewModel(application: Application):
 
     private fun mapBookmarkToBookrmarkView(bookmarkId: Long) {
         val bookmark = bookmarkRepo.getLiveBookmark(bookmarkId)
-        bookmarkDetailsView = Transformations.map(bookmark) {
-            val bookmarkView = bookmarkToBookmarkView(it)
-            bookmarkView
+        bookmarkDetailsView = Transformations.map(bookmark) { bookmark ->
+            bookmark?.let {
+                val bookmarkView = bookmarkToBookmarkView(it)
+                bookmarkView
+            }
         }
     }
 

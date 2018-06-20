@@ -39,6 +39,11 @@ class BookmarkRepo(private val context: Context) {
         return bookmarkDao.loadBookmark(id)
     }
 
+    fun deleteBookmark(bookmark: Bookmark) {
+        bookmark.deleteImage(context)
+        bookmarkDao.deleteBookmark(bookmark)
+    }
+
     fun placeTypeToCategory(placeType: Int): String {
         var category = "Other"
         if (categoryMap.containsKey(placeType)) {

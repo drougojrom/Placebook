@@ -4,6 +4,7 @@ import android.arch.persistence.room.Entity
 import android.arch.persistence.room.PrimaryKey
 import android.content.Context
 import android.graphics.Bitmap
+import util.FileUtils
 import util.ImageUtils
 
 @Entity
@@ -22,6 +23,12 @@ data class Bookmark(
     fun setImage(image: Bitmap, context: Context) {
         id?.let {
             ImageUtils.saveBitmapToFile(context, image, generateImageFilename(it))
+        }
+    }
+
+    fun deleteImage(context: Context) {
+        id?.let {
+            FileUtils.deleteFile(context, generateImageFilename(it))
         }
     }
 

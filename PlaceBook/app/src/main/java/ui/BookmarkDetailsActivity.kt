@@ -9,6 +9,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.support.v4.content.FileProvider
+import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
@@ -50,6 +51,10 @@ class BookmarkDetailsActivity: AppCompatActivity(),
         when (item?.itemId) {
             R.id.action_save -> {
                 saveChanges()
+                return true
+            }
+            R.id.action_delete -> {
+                deleteBookmark()
                 return true
             }
             else -> return super.onOptionsItemSelected(item)
@@ -232,6 +237,18 @@ class BookmarkDetailsActivity: AppCompatActivity(),
                 }
             }
         }
+    }
+
+    fun deleteBookmark() {
+        val bookmarkView = bookmarkDetailsView ?: return
+        AlertDialog.Builder(this)
+                .setMessage("Delete?")
+                .setPositiveButton("Ok") { _ , _  ->
+                    bookmarkDetailsViewModel.deleteBookmark(bookmarkView)
+                    finish()
+                }
+                .setNegativeButton("Cancel", null)
+                .show()
     }
 
     companion object {
