@@ -2,6 +2,7 @@ package ui
 
 import adapter.BookmarkInfoWindowAdapter
 import adapter.BookmarkListAdapter
+import android.app.Activity
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -13,13 +14,18 @@ import android.support.v4.app.ActivityCompat
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.widget.LinearLayoutManager
 import android.util.Log
+import android.view.WindowManager
+import android.widget.ProgressBar
 import com.google.android.gms.common.ConnectionResult
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException
+import com.google.android.gms.common.GooglePlayServicesRepairableException
 import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.places.Place
 import com.google.android.gms.location.places.PlacePhotoMetadata
 import com.google.android.gms.location.places.Places
+import com.google.android.gms.location.places.ui.PlaceAutocomplete
 
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -120,6 +126,12 @@ class MapsActivity : AppCompatActivity(),
         mMap.setOnInfoWindowClickListener {
             handleInfoWindowClick(it)
         }
+        mMap.setOnMapLongClickListener {
+            newBookmark(it)
+        }
+        fab.setOnClickListener {
+            searchAtCurrentLocation()
+        }
     }
 
     private fun setupToolbar() {
@@ -149,6 +161,7 @@ class MapsActivity : AppCompatActivity(),
         const val EXTRA_BOOKMARK_ID = "com.rom-portfolio.placebook.EXTRA_BOOKMARK_ID"
         private const val REQUEST_LOCATION = 1
         private const val TAG = "MapsActivity"
+        private const val AUTOCOMPLETE_REQUEST_CODE = 2
     }
 
     private fun getCurrentLocation() {
@@ -170,6 +183,7 @@ class MapsActivity : AppCompatActivity(),
     }
 
     private fun displayPoi(pointOfInterest: PointOfInterest) {
+        showProgress()
         displayPoiGetPlaceStep(pointOfInterest)
     }
 
@@ -182,6 +196,7 @@ class MapsActivity : AppCompatActivity(),
                         displayPoiGetPhotoMetaDataStep(place)
                     } else {
                         Log.e(TAG, "Error with getPlaceById ${places.status.statusMessage}")
+                        hideProgress()
                     }
                     places.release()
                 }
@@ -196,6 +211,9 @@ class MapsActivity : AppCompatActivity(),
                         if (photoMetadataBuffer.count > 0) {
                             val photo = photoMetadataBuffer.get(0).freeze()
                             displayPoiGetPhotoStep(place, photo)
+                            hideProgress()
+                        } else {
+                            hideProgress()
                         }
                         photoMetadataBuffer.release()
                     }
@@ -207,6 +225,7 @@ class MapsActivity : AppCompatActivity(),
                 resources.getDimensionPixelSize(R.dimen.default_image_width),
                 resources.getDimensionPixelSize(R.dimen.default_image_height))
                 .setResultCallback { placePhotoResult ->
+                    hideProgress()
                     if (placePhotoResult.status.isSuccess) {
                         val image = placePhotoResult.bitmap
                         displayPoiDisplayStep(place, image)
@@ -259,8 +278,9 @@ class MapsActivity : AppCompatActivity(),
                 .position(bookmark.location)
                 .title(bookmark.name)
                 .snippet(bookmark.phoneNumber)
-                .icon(BitmapDescriptorFactory
-                        .defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
+                .icon(bookmark.categoryResourceId?.let {
+                    BitmapDescriptorFactory.fromResource(it)
+                })
                 .alpha(0.8f))
         marker.tag = bookmark
         bookmark.id?.let {
@@ -307,6 +327,64 @@ class MapsActivity : AppCompatActivity(),
         location.latitude = bookmark.location.latitude
         location.longitude = bookmark.location.longitude
         updateMapToLocation(location)
+    }
+
+    private fun searchAtCurrentLocation() {
+        val bounds = mMap.projection.visibleRegion.latLngBounds
+        try {
+            val intent = PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_OVERLAY)
+                    .setBoundsBias(bounds)
+                    .build(this)
+            startActivityForResult(intent, AUTOCOMPLETE_REQUEST_CODE)
+        } catch (e: GooglePlayServicesRepairableException) {
+            // TODO: handle exception
+        } catch (e: GooglePlayServicesNotAvailableException) {
+            // TODO: handle exception
+        }
+    }
+
+    private fun newBookmark(latLng: LatLng) {
+        launch(CommonPool) {
+            val bookmarkId = mapsViewModel.addBookmark(latLng)
+            bookmarkId?.let {
+                startBookmarkDetail(bookmarkId)
+            }
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        when (requestCode) {
+            AUTOCOMPLETE_REQUEST_CODE -> {
+                if (resultCode == Activity.RESULT_OK && data != null) {
+                    val place = PlaceAutocomplete.getPlace(this, data)
+                    val location = Location("")
+                    location.latitude = place.latLng.latitude
+                    location.longitude = place.latLng.longitude
+                    updateMapToLocation(location)
+                    showProgress()
+                    displayPoiGetPhotoMetaDataStep(place)
+                }
+            }
+        }
+    }
+
+    private fun disableUserInteraction() {
+        window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+    }
+
+    private fun enableUserInteraction() {
+        window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+    }
+
+    private fun showProgress() {
+        progressBar.visibility = ProgressBar.VISIBLE
+        disableUserInteraction()
+    }
+
+    private fun hideProgress() {
+        progressBar.visibility = ProgressBar.INVISIBLE
+        enableUserInteraction()
     }
 
     class PlaceInfo(val place: Place? = null,

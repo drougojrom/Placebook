@@ -1,4 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -27,75 +33,111 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
             <ImageView
-        android:id="@+id/imageViewPlace"
-        android:layout_margin="0dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:maxHeight="300dp"
-        android:scaleType="fitCenter"
-        android:adjustViewBounds="true"
-        app:srcCompat="@drawable/default_image" />
-            <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:orientation="horizontal">
-        <TextView
-            android:id="@+id/textViewName"
-            style="@style/BookmarkLabel"
-            android:text="Name" />
+                android:id="@+id/imageViewPlace"
+                android:layout_margin="0dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:maxHeight="300dp"
+                android:scaleType="fitCenter"
+                android:adjustViewBounds="true"
+                app:srcCompat="@drawable/default_image" />
 
-        <EditText
-            android:id="@+id/editTextName"
-            style="@style/BookmarkEditText"
-            android:hint="Name"
-            android:inputType="text" />
-    </LinearLayout>
             <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-        <TextView
-            android:id="@+id/textViewNotes"
-            style="@style/BookmarkLabel"
-            android:text="Notes" />
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
 
-        <EditText
-            android:id="@+id/editTextNotes"
-            style="@style/BookmarkEditText"
-            android:hint="Enter notes"
-            android:inputType="textMultiLine" />
-    </LinearLayout>
-            <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
+                <TextView
+                    android:id="@+id/textViewCategoryLabel"
+                    style="@style/BookmarkLabel"
+                    android:layout_weight="0.4"
+                    android:text="Category" />
 
-        <TextView
-            android:id="@+id/textViewPhone"
-            style="@style/BookmarkLabel"
-            android:text="Phone"/>
-        <EditText
-            android:id="@+id/editTextPhone"
-            style="@style/BookmarkEditText"
-            android:hint="Phone number"
-            android:inputType="phone"/>
-    </LinearLayout>
+                <ImageView
+                    android:id="@+id/imageViewCategory"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="bottom"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginStart="16dp"
+                    android:src="@drawable/ic_other" />
+
+                <Spinner
+                    android:id="@+id/spinnerCategory"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_weight="1.4">
+                </Spinner>
+            </LinearLayout>
+
             <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-        
-        <TextView
-            android:id="@+id/textViewAddress"
-            style="@style/BookmarkLabel"
-            android:text="Address" />
-        <EditText
-            android:id="@+id/editTextAddress"
-            style="@style/BookmarkEditText"
-            android:hint="Address"
-            android:inputType="textMultiLine" />
-    </LinearLayout>
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:orientation="horizontal">
+                <TextView
+                    android:id="@+id/textViewName"
+                    style="@style/BookmarkLabel"
+                    android:text="Name" />
+                <EditText
+                    android:id="@+id/editTextName"
+                    style="@style/BookmarkEditText"
+                    android:hint="Name"
+                    android:inputType="text" />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <TextView
+                    android:id="@+id/textViewNotes"
+                    style="@style/BookmarkLabel"
+                    android:text="Notes" />
+                <EditText
+                    android:id="@+id/editTextNotes"
+                    style="@style/BookmarkEditText"
+                    android:hint="Enter notes"
+                    android:inputType="textMultiLine" />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <TextView
+                    android:id="@+id/textViewPhone"
+                    style="@style/BookmarkLabel"
+                    android:text="Phone"/>
+                <EditText
+                    android:id="@+id/editTextPhone"
+                    style="@style/BookmarkEditText"
+                    android:hint="Phone number"
+                    android:inputType="phone"/>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <TextView
+                    android:id="@+id/textViewAddress"
+                    style="@style/BookmarkLabel"
+                    android:text="Address" />
+                <EditText
+                    android:id="@+id/editTextAddress"
+                    style="@style/BookmarkEditText"
+                    android:hint="Address"
+                    android:inputType="textMultiLine" />
+            </LinearLayout>
         </LinearLayout>
     </ScrollView>
 </LinearLayout>
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:layout_gravity="bottom|end"
+        app:srcCompat="@android:drawable/ic_dialog_email"/>
+</FrameLayout>

@@ -20,7 +20,8 @@ class MapsViewModel(application: Application):
             var id: Long? = null,
             var location: LatLng = LatLng(0.0, 0.0),
             var name: String = "",
-            var phoneNumber: String = ""
+            var phoneNumber: String = "",
+            var categoryResourceId: Int? = null
     ) {
         fun getImage(context: Context): Bitmap? {
             id?.let {
@@ -43,6 +44,7 @@ class MapsViewModel(application: Application):
         bookmark.longitude = place.latLng.longitude
         bookmark.phone = place.phoneNumber.toString()
         bookmark.name = place.name.toString()
+        bookmark.category = getPlaceCategory(place)
 
         val newId = bookmarkRepo.addBookmark(bookmark)
         bookmark.setImage(image, getApplication())
@@ -57,11 +59,21 @@ class MapsViewModel(application: Application):
         return bookmarks
     }
 
+    fun addBookmark(latLng: LatLng): Long? {
+        val bookmark = bookmarkRepo.createBookmark()
+        bookmark.latitude = latLng.latitude
+        bookmark.longitude = latLng.longitude
+        bookmark.name = "Untitled"
+        bookmark.category = "Other"
+        return bookmarkRepo.addBookmark(bookmark)
+    }
+
     private fun bookmarkToBookmarkView(bookmark: Bookmark): MapsViewModel.BookmarkView {
         return MapsViewModel.BookmarkView(bookmark.id,
                 LatLng(bookmark.latitude, bookmark.longitude),
                 bookmark.name,
-                bookmark.phone)
+                bookmark.phone,
+                bookmarkRepo.getCategoryResourceId(bookmark.category))
     }
 
     private fun mapBookmarksToBookmarkView() {
@@ -73,6 +85,18 @@ class MapsViewModel(application: Application):
             bookmarkMarkerViews
         }
     }
+
+    private fun getPlaceCategory(place: Place): String {
+        var category = "Other"
+        val placesTypes = place.placeTypes
+        if (placesTypes.size > 0) {
+            val placeType = placesTypes[0]
+            category = bookmarkRepo.placeTypeToCategory(placeType)
+        }
+        return  category
+    }
+
+
 
 }
 
